@@ -32,27 +32,54 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     var accordionHeaders = document.querySelectorAll('.accordion-header');
+    var accordionPanel = document.getElementById('accordionPanel');
+    var currentAccordionItem = null;
+
+    function closeAccordion() {
+        if (currentAccordionItem) {
+            currentAccordionItem.classList.remove('active');
+            currentAccordionItem.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+        }
+        accordionPanel.style.maxHeight = null;
+        accordionPanel.classList.remove('active');
+        currentAccordionItem = null;
+    }
+
+    function getRowEndItem(item) {
+        var items = Array.from(document.querySelectorAll('.accordion-item'));
+        var idx = items.indexOf(item);
+        var cols = window.innerWidth >= 768 ? 2 : 1;
+        var rowStart = Math.floor(idx / cols) * cols;
+        var rowEnd = Math.min(rowStart + cols - 1, items.length - 1);
+        return items[rowEnd];
+    }
+
     accordionHeaders.forEach(function (header) {
         header.addEventListener('click', function () {
             var item = this.closest('.accordion-item');
             var body = item.querySelector('.accordion-body');
-            var isActive = item.classList.contains('active');
+            var wasActive = item === currentAccordionItem;
 
-            document.querySelectorAll('.accordion-item.active').forEach(function (activeItem) {
-                activeItem.classList.remove('active');
-                activeItem.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
-                var activeBody = activeItem.querySelector('.accordion-body');
-                activeBody.style.maxHeight = null;
-            });
+            closeAccordion();
 
-            if (!isActive) {
+            if (!wasActive) {
                 item.classList.add('active');
                 this.setAttribute('aria-expanded', 'true');
-                body.style.maxHeight = body.scrollHeight + 'px';
+                currentAccordionItem = item;
+
+                var rowEndItem = getRowEndItem(item);
+                rowEndItem.after(accordionPanel);
+
+                accordionPanel.innerHTML = body.innerHTML;
+                accordionPanel.classList.add('active');
+
+                requestAnimationFrame(function () {
+                    accordionPanel.style.maxHeight = accordionPanel.scrollHeight + 'px';
+                });
 
                 setTimeout(function () {
                     item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }, 400);
+                }, 450);
             }
         });
     });

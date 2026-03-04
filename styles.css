@@ -688,13 +688,22 @@ ul {
 }
 
 .accordion-body {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: none;
 }
 
-.accordion-item.active .accordion-body {
-    border-top: 1px solid var(--gray-100);
+.accordion-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: var(--radius-md);
+    grid-column: 1 / -1;
+}
+
+.accordion-panel.active {
+    border: 1px solid var(--purple);
+    box-shadow: var(--shadow-purple);
+    margin-top: -0.5rem;
+    background: var(--gray-50);
 }
 
 .plans-grid {
