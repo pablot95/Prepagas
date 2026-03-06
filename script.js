@@ -179,18 +179,75 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var formSuccess = document.getElementById('formSuccess');
 
-    formIndividuo.addEventListener('submit', function (e) {
-        e.preventDefault();
+    // EmailJS init
+    emailjs.init('Q35y7nGLtlElsfqZO');
+
+    function showFormSuccess() {
         formIndividuo.style.display = 'none';
+        formEmpresa.style.display = 'none';
         document.querySelector('.form-tabs').style.display = 'none';
         formSuccess.classList.add('show');
+    }
+
+    function showFormError(btn, originalText) {
+        btn.textContent = 'Error al enviar. Intentá de nuevo.';
+        btn.disabled = false;
+        setTimeout(function () { btn.textContent = originalText; }, 3000);
+    }
+
+    formIndividuo.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var btn = formIndividuo.querySelector('.btn-submit');
+        var originalText = btn.textContent;
+        btn.textContent = 'Enviando...';
+        btn.disabled = true;
+
+        var params = {
+            nombre: formIndividuo.nombre.value,
+            email: formIndividuo.email.value,
+            telefono: formIndividuo.telefono.value,
+            dni: formIndividuo.dni.value,
+            fecha_nacimiento: formIndividuo.fechaNacimiento.value,
+            localidad: formIndividuo.localidad.value,
+            tipo_afiliacion: formIndividuo.tipoAfiliacion.value,
+            prepaga: formIndividuo.prepaga.value || 'No especificada',
+            plan: formIndividuo.plan.value || 'No especificado',
+            mensaje: formIndividuo.mensaje.value || 'Sin mensaje'
+        };
+
+        emailjs.send('service_azcryzr', 'template_f3t4z5r', params)
+            .then(function () {
+                showFormSuccess();
+            })
+            .catch(function () {
+                showFormError(btn, originalText);
+            });
     });
 
     formEmpresa.addEventListener('submit', function (e) {
         e.preventDefault();
-        formEmpresa.style.display = 'none';
-        document.querySelector('.form-tabs').style.display = 'none';
-        formSuccess.classList.add('show');
+        var btn = formEmpresa.querySelector('.btn-submit');
+        var originalText = btn.textContent;
+        btn.textContent = 'Enviando...';
+        btn.disabled = true;
+
+        var params = {
+            nombre_empresa: formEmpresa.nombreEmpresa.value,
+            cuit: formEmpresa.cuit.value,
+            razon_social: formEmpresa.razonSocial.value,
+            localidad: formEmpresa.localidadEmpresa.value,
+            nombre_contacto: formEmpresa.nombreContacto.value,
+            telefono: formEmpresa.telefonoContacto.value,
+            mensaje: formEmpresa.mensajeEmpresa.value || 'Sin mensaje'
+        };
+
+        emailjs.send('service_azcryzr', 'template_bpa1hk1', params)
+            .then(function () {
+                showFormSuccess();
+            })
+            .catch(function () {
+                showFormError(btn, originalText);
+            });
     });
 
     var observerOptions = {
