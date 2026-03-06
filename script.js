@@ -106,12 +106,13 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     var plansByPrepaga = {
-        'OSDE': ['Plan 210', 'Plan 310', 'Plan 410', 'Plan 510'],
-        'Swiss Medical': ['SMG 20', 'SMG 30', 'SMG 40', 'SMG 50'],
-        'Galeno': ['Plan 220', 'Plan 330', 'Plan 440', 'Plan 550'],
-        'Medicus': ['Conecta', 'Integra', 'Family', 'Azul'],
-        'OMINT': ['Plan Global', 'Plan Premium', 'Plan Excellence'],
-        'Medifé': ['Bronce', 'Plata', 'Oro', 'Platinum']
+        'Swiss Medical': ['S1', 'S2', 'SMG02', 'SMG20', 'SMG30', 'SMG50', 'SMG60'],
+        'Galeno': ['Plan 200', 'Plan 220', 'Plan 300', 'Plan 330', 'Plan 400', 'Plan 440', 'Plan 550'],
+        'Avalian': ['Plan Cerca', 'Plan Hoy', 'Plan Integral', 'Plan Superior', 'Plan Selecta'],
+        'SanCor Salud': ['Plan F700', 'Plan 800', 'Plan 1000', 'Plan 1500', 'Plan 3000', 'Plan 4000', 'Plan 4500', 'Plan 5000 Exclusive', 'Plan 6000 Exclusive'],
+        'Premedic': ['Plan Por Aportes', 'Plan C100', 'Plan 200', 'Plan 300', 'Plan 400', 'Plan 500'],
+        'Medifé': ['Bronce Classic', 'Bronce', 'Plata', 'Oro', 'Platinum'],
+        'Doctored': ['Plan 500', 'Plan 1000', 'Plan 2000', 'Plan 3000']
     };
 
     var prepagaSelect = document.getElementById('prepaga');
@@ -140,22 +141,55 @@ document.addEventListener('DOMContentLoaded', function () {
         prepagaSelect.value = prepaga;
         updatePlanOptions(prepaga, plan);
 
+        // Ensure individual tab is active when clicking "Cotizar este plan"
+        var tabs = document.querySelectorAll('.form-tab');
+        tabs.forEach(function (t) { t.classList.remove('active'); });
+        tabs[0].classList.add('active');
+        document.getElementById('contactFormIndividuo').style.display = '';
+        document.getElementById('contactFormEmpresa').style.display = 'none';
+
         var contactSection = document.getElementById('contacto');
         contactSection.scrollIntoView({ behavior: 'smooth' });
 
-        var formWrapper = document.querySelector('.contact-form');
+        var formWrapper = document.getElementById('contactFormIndividuo');
         formWrapper.style.boxShadow = '0 0 0 3px rgba(108, 60, 240, 0.3), 0 25px 50px rgba(0,0,0,0.15)';
         setTimeout(function () {
             formWrapper.style.boxShadow = '0 25px 50px rgba(0,0,0,0.15)';
         }, 1500);
     };
 
-    var contactForm = document.getElementById('contactForm');
+    // Form tabs
+    var formTabs = document.querySelectorAll('.form-tab');
+    var formIndividuo = document.getElementById('contactFormIndividuo');
+    var formEmpresa = document.getElementById('contactFormEmpresa');
+
+    formTabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+            formTabs.forEach(function (t) { t.classList.remove('active'); });
+            tab.classList.add('active');
+            if (tab.dataset.tab === 'individuo') {
+                formIndividuo.style.display = '';
+                formEmpresa.style.display = 'none';
+            } else {
+                formIndividuo.style.display = 'none';
+                formEmpresa.style.display = '';
+            }
+        });
+    });
+
     var formSuccess = document.getElementById('formSuccess');
 
-    contactForm.addEventListener('submit', function (e) {
+    formIndividuo.addEventListener('submit', function (e) {
         e.preventDefault();
-        contactForm.style.display = 'none';
+        formIndividuo.style.display = 'none';
+        document.querySelector('.form-tabs').style.display = 'none';
+        formSuccess.classList.add('show');
+    });
+
+    formEmpresa.addEventListener('submit', function (e) {
+        e.preventDefault();
+        formEmpresa.style.display = 'none';
+        document.querySelector('.form-tabs').style.display = 'none';
         formSuccess.classList.add('show');
     });
 
@@ -231,5 +265,20 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+
+    var btnVerMas = document.getElementById('btnVerMas');
+    var clinicasExpanded = document.getElementById('clinicasExpanded');
+    if (btnVerMas && clinicasExpanded) {
+        btnVerMas.addEventListener('click', function () {
+            btnVerMas.classList.toggle('active');
+            clinicasExpanded.classList.toggle('show');
+            var span = btnVerMas.querySelector('span');
+            if (clinicasExpanded.classList.contains('show')) {
+                span.textContent = 'Ver menos';
+            } else {
+                span.textContent = 'Ver más clínicas';
+            }
+        });
+    }
 
 });
